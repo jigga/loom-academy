@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="loom-ac.discovery-service.main" target="12" />
+      <module name="loom-ac.discovery-service.test" target="12" />
+      <module name="pl.jigga.loom.discovery-service.main" target="12" />
+      <module name="pl.jigga.loom.discovery-service.test" target="12" />
+      <module name="pl.jigga.loom.echo-service.main" target="12" />
+      <module name="pl.jigga.loom.echo-service.test" target="12" />
+      <module name="pl.jigga.loom.loom-academy.main" target="12" />
+      <module name="pl.jigga.loom.loom-academy.test" target="12" />
+      <module name="pl.jigga.loom.workshop-service.main" target="12" />
+      <module name="pl.jigga.loom.workshop-service.test" target="12" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

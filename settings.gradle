@@ -1,0 +1,5 @@
+rootProject.name = 'loom-academy'
+include 'discovery-service'
+include 'echo-service'
+include 'workshop-service'
+
