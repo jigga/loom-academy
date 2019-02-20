@@ -68,7 +68,8 @@ public class FiberExecutor implements ThreadPool {
      */
     @Override
     public void execute(Runnable command) {
-        scheduler.execute(command);
+//        scheduler.execute(command);
+        Fiber.schedule(scheduler, command);
     }
 
 }
