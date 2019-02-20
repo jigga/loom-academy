@@ -9,7 +9,7 @@ public class JettyCustomizer implements WebServerFactoryCustomizer<JettyServletW
 
     @Override
     public void customize(JettyServletWebServerFactory factory) {
-        factory.setThreadPool(new FiberExecutor());
+        factory.setThreadPool(new FiberExecutor().init());
     }
 
 }
