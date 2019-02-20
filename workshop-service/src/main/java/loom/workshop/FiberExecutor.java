@@ -23,6 +23,7 @@ public class FiberExecutor implements ThreadPool {
     @PostConstruct
     void init() {
         if (scheduler instanceof ThreadPoolExecutor) {
+            LOGGER.info("Pre-starting core threads...");
             ((ThreadPoolExecutor) scheduler).prestartAllCoreThreads();
         }
     }
@@ -36,6 +37,7 @@ public class FiberExecutor implements ThreadPool {
 
     @Override
     public void join() throws InterruptedException {
+        LOGGER.info("Waiting for the thread pool to shut down...");
         scheduler.shutdownNow();
         scheduler.awaitTermination(10, TimeUnit.SECONDS);
     }
@@ -55,9 +57,19 @@ public class FiberExecutor implements ThreadPool {
         return false;
     }
 
+    /**
+     * Right now we execute the given task (or HTTP request to be more precise, as this is the thread pool that we
+     * customize the Jetty container with) by submitting it to the preconfigured {@link #scheduler}.
+     *
+     * Your task is to change the implementation of this method, so that it executes the given request using
+     * {@link Fiber} and the preconfigured {@link #scheduler}.
+     *
+     * @param command The command/request/task to execute.
+     */
     @Override
     public void execute(Runnable command) {
-        scheduler.execute(command);
+//        scheduler.execute(command);
+        Fiber.schedule(scheduler, command);
     }
 
 }
