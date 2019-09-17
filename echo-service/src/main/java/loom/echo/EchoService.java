@@ -1,5 +1,7 @@
 package loom.echo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -22,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 @EnableDiscoveryClient
 @SpringBootApplication
 public class EchoService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EchoService.class);
 
     public static void main(String[] args) {
         SpringApplication.run(EchoService.class);
@@ -48,6 +52,8 @@ public class EchoService {
         responseMap.put("cookies", request.getCookies());
         responseMap.put("parameters", request.getParameterMap());
         responseMap.put("path", request.getServletPath());
+
+        LOGGER.info("Returning: {}", responseMap);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseMap);
 

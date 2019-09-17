@@ -1,6 +1,6 @@
 package loom.workshop;
 
-import org.eclipse.jetty.util.thread.ThreadPool;
+//import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,12 +9,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class FiberExecutor implements ThreadPool {
+public class FiberExecutor /*implements ThreadPool*/ {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FiberExecutor.class);
 
     private final ExecutorService scheduler =
         Executors.newFixedThreadPool(10);
+    private final FiberScope poolScope = FiberScope.open();
 
     FiberExecutor init() {
         if (scheduler instanceof ThreadPoolExecutor) {
@@ -24,24 +25,25 @@ public class FiberExecutor implements ThreadPool {
         return this;
     }
 
-    @Override
+//    @Override
     public void join() throws InterruptedException {
         LOGGER.info("Waiting for the thread pool to shut down...");
+        poolScope.close();
         scheduler.shutdownNow();
         scheduler.awaitTermination(10, TimeUnit.SECONDS);
     }
 
-    @Override
+//    @Override
     public int getThreads() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+//    @Override
     public int getIdleThreads() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+//    @Override
     public boolean isLowOnThreads() {
         return false;
     }
@@ -55,9 +57,11 @@ public class FiberExecutor implements ThreadPool {
      *
      * @param command The command/request/task to execute.
      */
-    @Override
+//    @Override
     public void execute(Runnable command) {
-        scheduler.execute(command);
+        poolScope.schedule(command);
+//        FiberScope.background().schedule(command);
+//        scheduler.execute(command);
     }
 
 }

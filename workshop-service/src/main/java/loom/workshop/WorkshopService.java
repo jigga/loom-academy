@@ -1,11 +1,11 @@
 package loom.workshop;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +27,7 @@ public class WorkshopService {
 }
 
 @RestController
-@RequestMapping("/workshop")
+@RequestMapping("/loom")
 class WorkshopController {
 
     private final EchoClient service;
@@ -36,9 +36,15 @@ class WorkshopController {
         this.service = service;
     }
 
-    @GetMapping("/test")
-    public JsonNode getWithDelayWithThread() {
+    @GetMapping(value = "/test", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String getWithDelayWithThread() {
         return service.getWithDelay();
+    }
+
+    @GetMapping(value = "/gc", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String gc() {
+        System.gc();
+        return "{\"status\": \"OK\"}";
     }
 
 }
