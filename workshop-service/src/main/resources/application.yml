@@ -12,3 +12,7 @@ logging:
 run:
   in:
     fiber: true
+
+eureka:
+  client:
+    register-with-eureka: false

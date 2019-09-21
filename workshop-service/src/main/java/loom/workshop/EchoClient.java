@@ -1,5 +1,7 @@
 package loom.workshop;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class EchoClient {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EchoClient.class);
 
     private final DiscoveryClient discoveryClient;
     private final HttpClient httpClient;
@@ -49,7 +53,9 @@ public class EchoClient {
         var delay = ThreadLocalRandom.current().nextInt(1001);
         var echoServiceInstances = discoveryClient.getInstances("echo-service");
         Collections.shuffle(echoServiceInstances);
-        return echoServiceInstances.get(0).getUri() + "/echo/delay/" + delay;
+        var uri = echoServiceInstances.get(0).getUri() + "/echo/delay/" + delay;
+        LOGGER.info("Echo service URI is: {}", uri);
+        return uri;
     }
 
 }

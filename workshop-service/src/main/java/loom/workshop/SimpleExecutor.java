@@ -1,7 +1,6 @@
 package loom.workshop;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,36 +12,36 @@ import java.util.concurrent.Executors;
 @Component
 public class SimpleExecutor implements Executor {
 
-    private final Logger logger = LoggerFactory.getLogger(SimpleExecutor.class);
-    private final Executor scheduler =
-        Executors.newSingleThreadExecutor();
-    // private final FiberScope poolScope = FiberScope.open();
     private final boolean runInFiber;
+    private final Executor scheduler;
+    private ThreadLocal<FiberScope> fiberScope = ThreadLocal.withInitial(FiberScope::open);
 
     public SimpleExecutor(@Value("${run.in.fiber}") boolean runInFiber) {
         this.runInFiber = runInFiber;
+        var threadFactoryBuilder = new ThreadFactoryBuilder();
+        if (this.runInFiber) {
+            threadFactoryBuilder.setNameFormat("fiber-carrier-thread-%d");
+        }
+        scheduler = Executors.newFixedThreadPool(4, threadFactoryBuilder.build());
     }
 
     public void execute(Runnable command) {
-        Runnable runnable = () -> {
-            measureTime(command);
-        };
         if (runInFiber) {
-            FiberScope.background().schedule(scheduler, runnable);
+            Runnable task = () -> {
+                MDC.put("requestId", RequestId.get());
+                TimeUtil.measureTime(command);
+            };
+            fiberScope.get().schedule(scheduler, task);
         } else {
-            scheduler.execute(runnable);
-        }
-    }
-
-    void measureTime(Runnable command) {
-        MDC.put("requestId", UUID.randomUUID().toString());
-        try {
-            var start = System.nanoTime();
-            command.run();
-            var end = System.nanoTime();
-            logger.info("Command {} executed in {} seconds", command, ((end - start)/1e9));
-        } finally {
-            MDC.clear();
+            Runnable task = () -> {
+                MDC.put("requestId", UUID.randomUUID().toString());
+                try {
+                    TimeUtil.measureTime(command);
+                } finally {
+                    MDC.clear();
+                }
+            };
+            scheduler.execute(task);
         }
     }
 

@@ -1,5 +1,7 @@
 package loom.workshop;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.ServiceInstance;
@@ -30,6 +32,8 @@ public class WorkshopService {
 @RequestMapping("/loom")
 class WorkshopController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(WorkshopController.class);
+
     private final EchoClient service;
 
     public WorkshopController(EchoClient service) {
@@ -38,6 +42,7 @@ class WorkshopController {
 
     @GetMapping(value = "/test", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getWithDelayWithThread() {
+        LOGGER.info("Received new request...");
         return service.getWithDelay();
     }
 
